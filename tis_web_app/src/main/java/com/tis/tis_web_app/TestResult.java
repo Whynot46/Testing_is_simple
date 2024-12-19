@@ -5,7 +5,8 @@ public class TestResult {
     private int test_id;
     private int points;
 
-    TestResult(int test_id, int points){
+    TestResult(int id, int test_id, int points){
+        this.id = id;
         this.test_id = test_id;
         this.points = points;
     }

@@ -5,7 +5,8 @@ public class Task {
     private String question;
     private String answer;
 
-    Task(String question, String answer){
+    Task(int id, String question, String answer){
+        this.id = id;
         this.question = question;
         this.answer = answer;
     }

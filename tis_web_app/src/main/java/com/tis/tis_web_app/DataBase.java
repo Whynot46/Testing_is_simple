@@ -180,4 +180,228 @@ public class DataBase {
         return role_name;
     }
 
+    public static List<Task> get_tasks() {
+        List<Task> tasks = new ArrayList<>();
+        String query = "SELECT id, question, answer FROM tasks"; // SQL-запрос для получения id, question и answer задач
+    
+        try (Connection connection = DataBase.getConnection(); // Получаем соединение из класса DataBase
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+    
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String question = resultSet.getString("question");
+                String answer = resultSet.getString("answer");
+    
+                Task task = new Task(id, question, answer);
+                tasks.add(task);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return tasks; 
+    }
+
+    public static Task get_task(int task_id) {
+        Task task = null;
+        String query = "SELECT question, answer FROM tasks WHERE id = ?"; 
+    
+        try (Connection connection = DataBase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, task_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+    
+            if (resultSet.next()) {
+                String question = resultSet.getString("question");
+                String answer = resultSet.getString("answer");
+    
+                task = new Task(task_id, question, answer);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return task;
+    }
+
+    private static ArrayList<Integer> get_tasks_id_by_test_id(int test_id) {
+        ArrayList<Integer> tasks_id = new ArrayList<>();
+        String query = "SELECT task_id FROM test_tasks WHERE test_id = ?";
+    
+        try (Connection connection = DataBase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, test_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+    
+            while (resultSet.next()) {
+                int task_id = resultSet.getInt("task_id");
+                tasks_id.add(task_id);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return tasks_id;
+    }
+
+    public static ArrayList<Test> get_tests() {
+        ArrayList<Test> tests = new ArrayList<>();
+        String query = "SELECT id, topic_id, teacher_id FROM tests"; // SQL-запрос для получения id, topic_id и teacher_id тестов
+    
+        try (Connection connection = DataBase.getConnection(); // Получаем соединение из класса DataBase
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+    
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int topic_id = resultSet.getInt("topic_id");
+                String tasks_id_str = resultSet.getString("tasks_id");
+                int teacher_id = resultSet.getInt("teacher_id");
+                
+                ArrayList<Task> tasks = new ArrayList<>();
+    
+                if (tasks_id_str != null && !tasks_id_str.isEmpty()) {
+                    tasks_id_str = tasks_id_str.replaceAll("[{}]", "").trim();
+                    String[] tasks_id = tasks_id_str.split(","); // Предполагаем, что идентификаторы разделены запятыми
+                    for (String task_id : tasks_id) {
+                        Task task = DataBase.get_task(Integer.parseInt(task_id.trim())); // Получаем объект User по userId
+                        if (task != null) {
+                            tasks.add(task);
+                        }
+                    }
+                }
+
+                Test test = new Test(id, topic_id, tasks, teacher_id);
+                tests.add(test);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return tests; 
+    }
+
+    public static Test get_test(int test_id) {
+        Test test = null;
+        String query = "SELECT id, topic_id, teacher_id FROM tests WHERE id = ?"; 
+    
+        try (Connection connection = DataBase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, test_id); 
+            ResultSet resultSet = preparedStatement.executeQuery();
+    
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int topic_id = resultSet.getInt("topic_id");
+                int teacher_id = resultSet.getInt("teacher_id");
+    
+                ArrayList<Integer> tasks_id = get_tasks_id_by_test_id(test_id);
+                ArrayList<Task> tasks = new ArrayList<>();
+                for (int task_id : tasks_id) {
+                    Task task = DataBase.get_task(task_id);
+                    if (task != null) {
+                        tasks.add(task);
+                        }
+                    }
+                test = new Test(id, topic_id, tasks, teacher_id);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return test;
+    }
+
+    public static ArrayList<Topic> get_topics() {
+        ArrayList<Topic> topics = new ArrayList<>();
+        String query = "SELECT id, name FROM topics";
+    
+        try (Connection connection = DataBase.getConnection(); 
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+    
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+    
+                Topic topic = new Topic(id, name); 
+                topics.add(topic);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return topics;
+    }
+
+    public static Topic get_topic(int topic_id) {
+        Topic topic = null;
+        String query = "SELECT id, name FROM topics WHERE id = ?";
+    
+        try (Connection connection = DataBase.getConnection(); 
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, topic_id); 
+            ResultSet resultSet = preparedStatement.executeQuery(); 
+    
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+    
+                topic = new Topic(id, name); 
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); 
+        }
+        
+        return topic;
+    }
+
+    public static ArrayList<Integer> get_students_id_by_class_id(int class_id) {
+        ArrayList<Integer> students_id = new ArrayList<>();
+        String query = "SELECT student_id FROM class_students WHERE class_id = ?"; 
+    
+        try (Connection connection = DataBase.getConnection(); 
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, class_id); 
+            ResultSet resultSet = preparedStatement.executeQuery(); 
+    
+            while (resultSet.next()) { 
+                int student_id = resultSet.getInt("student_id");
+                students_id.add(student_id);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return students_id;
+    }
+
+    public static ArrayList<Class> get_classes() {
+        ArrayList<Class> classes = new ArrayList<>();
+        String query = "SELECT id, name, teacher_id FROM classes"; 
+    
+        try (Connection connection = DataBase.getConnection(); 
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+    
+            while (resultSet.next()) { 
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                int teacher_id = resultSet.getInt("teacher_id");
+    
+                ArrayList<Integer> students_id = get_students_id_by_class_id(id);
+                Class class_obj = new Class(id, name, students_id, teacher_id);
+                classes.add(class_obj);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return classes;
+    }
+
 } 
