@@ -7,14 +7,19 @@ public class User {
     private String patronymic;
     private String last_name;
     private String password;
-    public Role role = new Role("Гость");
+    private Role role;
 
-    User(String first_name, String patronymic, String last_name, String birth_date, String phone_number, String password, Role role){
+    User(int id, String first_name, String patronymic, String last_name, String password, Role role){
+        this.id = id;
         this.first_name = first_name;
         this.patronymic = patronymic;
         this.last_name = last_name;
         this.password = password;
         this.role = role;
+        if (DataBase.is_old(id)){
+            DataBase.add_user(first_name, patronymic, last_name, password, role.get_id());
+        }
+            
     }
 
     public void set_first_name(String first_name){
@@ -27,6 +32,10 @@ public class User {
 
     public void set_last_name(String last_name){
         this.last_name = last_name;
+    }
+
+    public void set_password(String password){
+        this.password = password;
     }
 
     public void set_role(Role role){
@@ -53,12 +62,15 @@ public class User {
         return role;
     }
 
+    public String get_role_name(){
+        return role.get_name();
+    }
+
     public String get_password(){
         return password;
     }
 
     public String toString(){
-        return "id: " + id + ", first_name: " + first_name + ", patronymic: " + patronymic + "password: "+ password + "role: " + role.get_name();
+        return "id: " + id + ", first_name: " + first_name + ", patronymic: " + patronymic + "birth_date: " + "password: "+ password + "role: " + role.get_name();
     }
 }
-
