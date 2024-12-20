@@ -8,6 +8,11 @@ public class Test {
     private ArrayList<Integer> tasks_id;
     private int teacher_id;
 
+    Test(int id, int topic_id, int teacher_id){
+        this.id = id;
+        this.topic_id = topic_id;
+        this.teacher_id = teacher_id;
+    }
 
     Test(int id, int topic_id, ArrayList<Integer> tasks_id, int teacher_id){
         this.id = id;

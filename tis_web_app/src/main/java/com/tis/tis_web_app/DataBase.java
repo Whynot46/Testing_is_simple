@@ -43,7 +43,7 @@ public class DataBase {
         return false;
     }
     
-    public static boolean add_user(String firstName, String patronymic, String lastName, String password, int role_id) {
+    public static void add_user(String firstName, String patronymic, String lastName, String password, int role_id) {
         String query = "INSERT INTO users (first_name, patronymic, last_name, password, role_id) VALUES (?, ?, ?, ?, ?)";
         try (Connection connection = getConnection(); // Получаем соединение из пула
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -58,6 +58,60 @@ public class DataBase {
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public static void add_test(int id, int topic_id, ArrayList<Integer> tasks_id, int teacher_id) {
+        String query = "INSERT INTO tests (id, topic_id, teacher_id) VALUES (?, ?, ?)";
+        
+        try (Connection connection = getConnection(); // Получаем соединение из пула
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, id); // Устанавливаем идентификатор теста
+            preparedStatement.setInt(2, topic_id); // Устанавливаем идентификатор темы
+            preparedStatement.setInt(3, teacher_id); // Устанавливаем идентификатор преподавателя
+            
+            int rowsAffected = preparedStatement.executeUpdate(); // Выполняем вставку
+            
+            if (rowsAffected > 0) {
+                System.out.println("Тест успешно добавлен");
+                // Если есть задачи, добавляем их в таблицу test_tasks
+                if (!tasks_id.isEmpty()) {
+                    for (Integer task_id : tasks_id) {
+                        String task_query = "INSERT INTO test_tasks (test_id, task_id) VALUES (?, ?)";
+                        try (PreparedStatement taskPreparedStatement = connection.prepareStatement(task_query)) {
+                            taskPreparedStatement.setInt(1, id); // Устанавливаем идентификатор теста
+                            taskPreparedStatement.setInt(2, task_id); // Устанавливаем идентификатор задачи
+                            taskPreparedStatement.executeUpdate(); // Выполняем вставку
+                        }
+                    }
+                }
+            } else {
+                System.out.println("Не удалось добавить тест");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static void add_task(int task_id, String question, String answer) {
+        String query = "INSERT INTO tasks (id, question, answer) VALUES (?, ?, ?)";
+        try (Connection connection = DataBase.getConnection(); // Получаем соединение из класса DataBase
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, task_id); // Устанавливаем идентификатор задачи
+            preparedStatement.setString(2, question); // Устанавливаем вопрос
+            preparedStatement.setString(3, answer); // Устанавливаем ответ
+            
+            int rowsAffected = preparedStatement.executeUpdate(); // Выполняем вставку
+            
+            if (rowsAffected > 0) {
+                System.out.println("Задача успешно добавлена");
+            } else {
+                System.out.println("Не удалось добавить задачу");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
