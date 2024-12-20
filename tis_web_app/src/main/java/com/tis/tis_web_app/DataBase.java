@@ -839,4 +839,114 @@ public class DataBase {
         return statistic; // Возвращаем объект статистики или null, если данные не найдены
     }
 
+    public ArrayList<User> get_worst_students(int student_id) {
+        ArrayList<User> worst_students = new ArrayList<>();
+        String query = "SELECT user_id, AVG(points) AS average_score " +
+                       "FROM test_results " +
+                       "WHERE user_id != ? " + // Исключаем текущего студента
+                       "GROUP BY user_id " +
+                       "ORDER BY average_score ASC " + // Сортируем по среднему баллу (возрастание)
+                       "LIMIT 5"; // Ограничиваем до 5 учеников
+    
+        try (Connection connection = DataBase.getConnection(); // Получаем соединение из класса DataBase
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, student_id); // Устанавливаем значение student_id в запрос
+            ResultSet resultSet = preparedStatement.executeQuery(); // Выполняем запрос
+    
+            while (resultSet.next()) {
+                int user_id = resultSet.getInt("user_id");
+                // Получаем информацию о пользователе по user_id
+                User user = DataBase.get_user(user_id); // Предполагается, что у вас есть метод для получения пользователя по ID
+                if (user != null) {
+                    worst_students.add(user); // Добавляем пользователя в список
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return worst_students; // Возвращаем список худших учеников
+    }
+
+    public ArrayList<User> get_best_students(int student_id) {
+        ArrayList<User> best_students = new ArrayList<>();
+        String query = "SELECT user_id, AVG(points) AS average_score " +
+                       "FROM test_results " +
+                       "WHERE user_id != ? " + // Исключаем текущего студента
+                       "GROUP BY user_id " +
+                       "ORDER BY average_score DESC " + // Сортируем по среднему баллу (убывание)
+                       "LIMIT 5"; // Ограничиваем до 5 учеников
+    
+        try (Connection connection = DataBase.getConnection(); // Получаем соединение из класса DataBase
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, student_id); // Устанавливаем значение student_id в запрос
+            ResultSet resultSet = preparedStatement.executeQuery(); // Выполняем запрос
+    
+            while (resultSet.next()) {
+                int user_id = resultSet.getInt("user_id");
+                // Получаем информацию о пользователе по user_id
+                User user = DataBase.get_user(user_id); // Предполагается, что у вас есть метод для получения пользователя по ID
+                if (user != null) {
+                    best_students.add(user); // Добавляем пользователя в список
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return best_students; // Возвращаем список лучших учеников
+    }
+
+    public Test get_most_difficult_test() {
+        Test mostDifficultTest = null;
+        String query = "SELECT test_id, AVG(points) AS average_score " +
+                       "FROM test_results " +
+                       "GROUP BY test_id " +
+                       "ORDER BY average_score ASC " + // Сортируем по среднему баллу (возрастание)
+                       "LIMIT 1"; // Ограничиваем до 1 теста
+    
+        try (Connection connection = DataBase.getConnection(); // Получаем соединение из класса DataBase
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            ResultSet resultSet = preparedStatement.executeQuery(); // Выполняем запрос
+    
+            if (resultSet.next()) {
+                int testId = resultSet.getInt("test_id");
+                // Получаем информацию о тесте по testId
+                mostDifficultTest = DataBase.get_test(testId); // Предполагается, что у вас есть метод для получения теста по ID
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return mostDifficultTest; // Возвращаем тест с наименьшим средним баллом или null, если тесты не найдены
+    }
+
+    public Test get_easiest_test() {
+        Test easiest_test = null;
+        String query = "SELECT test_id, AVG(points) AS average_score " +
+                       "FROM test_results " +
+                       "GROUP BY test_id " +
+                       "ORDER BY average_score DESC " + // Сортируем по среднему баллу (убывание)
+                       "LIMIT 1"; // Ограничиваем до 1 теста
+    
+        try (Connection connection = DataBase.getConnection(); // Получаем соединение из класса DataBase
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            ResultSet resultSet = preparedStatement.executeQuery(); // Выполняем запрос
+    
+            if (resultSet.next()) {
+                int test_id = resultSet.getInt("test_id");
+                // Получаем информацию о тесте по test_id
+                easiest_test = DataBase.get_test(test_id); // Предполагается, что у вас есть метод для получения теста по ID
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return easiest_test; // Возвращаем тест с наивысшим средним баллом или null, если тесты не найдены
+    }
+
 } 
