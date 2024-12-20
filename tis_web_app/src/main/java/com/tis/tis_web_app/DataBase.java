@@ -811,4 +811,32 @@ public class DataBase {
         return statistic; // Возвращаем объект статистики или null, если данные не найдены
     }
 
+    public TestStatistic get_test_statistic(int test_id) {
+        TestStatistic statistic = null;
+        String query = "SELECT AVG(points) AS average_score, " +
+                       "MAX(points) AS highest_score, " +
+                       "MIN(points) AS lowest_score " +
+                       "FROM test_results WHERE test_id = ?";
+    
+        try (Connection connection = DataBase.getConnection(); // Получаем соединение из класса DataBase
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, test_id); // Устанавливаем значение test_id в запрос
+            ResultSet resultSet = preparedStatement.executeQuery(); // Выполняем запрос
+    
+            if (resultSet.next()) {
+                double average_test_results = resultSet.getDouble("average_score");
+                int highest_test_results = resultSet.getInt("highest_score");
+                int lowest_test_results = resultSet.getInt("lowest_score");
+    
+                // Создаем объект TestStatistic с полученными данными
+                statistic = new TestStatistic(test_id, average_test_results, highest_test_results, lowest_test_results);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return statistic; // Возвращаем объект статистики или null, если данные не найдены
+    }
+
 } 
