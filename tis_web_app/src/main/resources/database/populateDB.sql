@@ -32,18 +32,18 @@ INSERT INTO test (topic_id, tasks_id, teacher_id) VALUES
 
 -- Заполнение таблицы test_result
 INSERT INTO test_result (test_id, points) VALUES
-(1, 5.0),  -- Результат теста по математике
-(2, 4.5),  -- Результат теста по физике
-(3, 3.0);  -- Результат теста по химии
+(1, 95.0),  -- Результат теста по математике
+(2, 44.5),  -- Результат теста по физике
+(3, 23.0);  -- Результат теста по химии
 
 -- Заполнение таблицы admin_profile
 INSERT INTO admin_profile (user_id) VALUES
 (1);  -- Профиль администратора
 
 -- Заполнение таблицы teacher_profile
-INSERT INTO teacher_profile (user_id) VALUES
-(2),  -- Профиль учителя Петрова
-(5);  -- Профиль учителя Дмитриева
+INSERT INTO teacher_profile (user_id, topics_id) VALUES
+(2, ARRAY[1]),  -- Профиль учителя Петрова
+(5, ARRAY[2]);  -- Профиль учителя Дмитриева
 
 -- Заполнение таблицы student_profile
 INSERT INTO student_profile (user_id, test_results_id) VALUES

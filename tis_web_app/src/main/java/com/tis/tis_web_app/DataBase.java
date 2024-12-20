@@ -276,35 +276,21 @@ public class DataBase {
 
     public static ArrayList<Test> get_tests() {
         ArrayList<Test> tests = new ArrayList<>();
-        String query = "SELECT id, topic_id, teacher_id FROM tests"; // SQL-запрос для получения id, topic_id и teacher_id тестов
+        String query = "SELECT id, topic_id, teacher_id FROM tests";
     
-        try (Connection connection = DataBase.getConnection(); // Получаем соединение из класса DataBase
+        try (Connection connection = DataBase.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
     
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 int topic_id = resultSet.getInt("topic_id");
-                String tasks_id_str = resultSet.getString("tasks_id");
                 int teacher_id = resultSet.getInt("teacher_id");
-                
-                ArrayList<Task> tasks = new ArrayList<>();
-    
-                if (tasks_id_str != null && !tasks_id_str.isEmpty()) {
-                    tasks_id_str = tasks_id_str.replaceAll("[{}]", "").trim();
-                    String[] tasks_id = tasks_id_str.split(","); // Предполагаем, что идентификаторы разделены запятыми
-                    for (String task_id : tasks_id) {
-                        Task task = DataBase.get_task(Integer.parseInt(task_id.trim())); // Получаем объект User по userId
-                        if (task != null) {
-                            tasks.add(task);
-                        }
-                    }
-                }
-
-                Test test = new Test(id, topic_id, tasks, teacher_id);
+                ArrayList<Integer> tasks_id = get_tasks_id_by_test_id(id);
+                Test test = new Test(id, topic_id, tasks_id, teacher_id);
                 tests.add(test);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return tests; 
@@ -317,23 +303,15 @@ public class DataBase {
         try (Connection connection = DataBase.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             
-            preparedStatement.setInt(1, test_id); 
+            preparedStatement.setInt(1, test_id);
             ResultSet resultSet = preparedStatement.executeQuery();
     
             if (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 int topic_id = resultSet.getInt("topic_id");
                 int teacher_id = resultSet.getInt("teacher_id");
-    
                 ArrayList<Integer> tasks_id = get_tasks_id_by_test_id(test_id);
-                ArrayList<Task> tasks = new ArrayList<>();
-                for (int task_id : tasks_id) {
-                    Task task = DataBase.get_task(task_id);
-                    if (task != null) {
-                        tasks.add(task);
-                        }
-                    }
-                test = new Test(id, topic_id, tasks, teacher_id);
+                test = new Test(id, topic_id, tasks_id, teacher_id);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -477,6 +455,332 @@ public class DataBase {
         }
         
         return classes;
+    }
+
+    public static StudentProfile get_student_profile(int student_id) {
+        StudentProfile student_profile = null;
+        String query = "SELECT id, user_id, test_results_id FROM student_profiles WHERE user_id = ?"; // Adjust the query based on your database schema
+    
+        try (Connection connection = DataBase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, student_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+    
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int user_id = resultSet.getInt("user_id");
+                ArrayList<Integer> test_results_id = new ArrayList<>();
+                String test_results_id_str = resultSet.getString("test_results_id");
+                if (test_results_id_str != null && !test_results_id_str.isEmpty()) {
+                    String[] ids = test_results_id_str.split(",");
+                    for (String test_id : ids) {
+                        test_results_id.add(Integer.parseInt(test_id.trim()));
+                    }
+                }
+    
+                student_profile = new StudentProfile(id, user_id, test_results_id);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return student_profile;
+    }
+
+    public static TeacherProfile get_teacher_profile(int teacher_id) {
+        TeacherProfile teacher_profile = null;
+        String query = "SELECT id, user_id, topics_id FROM teacher_profiles WHERE user_id = ?"; // Предполагается, что topics_id хранится в виде строки, например, "1,2,3"
+    
+        try (Connection connection = DataBase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, teacher_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+    
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int user_id = resultSet.getInt("user_id");
+                ArrayList<Integer> topics_id = new ArrayList<>();
+                String topics_id_str = resultSet.getString("topics_id");
+                if (topics_id_str != null && !topics_id_str.isEmpty()) {
+                    String[] ids = topics_id_str.split(",");
+                    for (String topic_id : ids) {
+                        topics_id.add(Integer.parseInt(topic_id.trim()));
+                    }
+                }
+    
+                teacher_profile = new TeacherProfile(id, user_id, topics_id);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return teacher_profile;
+    }
+
+    public static AdminProfile get_admin_profile(int admin_id) {
+        AdminProfile admin_profile = null;
+        String query = "SELECT id, user_id FROM admin_profiles WHERE user_id = ?"; // Предполагается, что admin_id соответствует user_id
+    
+        try (Connection connection = DataBase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, admin_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+    
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int user_id = resultSet.getInt("user_id");
+    
+                admin_profile = new AdminProfile(id, user_id);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return admin_profile;
+    }
+
+    public static void change_user_data(int id, String first_name, String patronymic, String last_name, String password, int role_id) {
+        String query = "UPDATE users SET first_name = ?, patronymic = ?, last_name = ?, password = ?, role_id = ? WHERE id = ?";
+    
+        try (Connection connection = DataBase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setString(1, first_name);
+            preparedStatement.setString(2, patronymic);
+            preparedStatement.setString(3, last_name);
+            preparedStatement.setString(4, password);
+            preparedStatement.setInt(5, role_id);
+            preparedStatement.setInt(6, id);
+    
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Данные пользователя успешно обновлены");
+            } else {
+                System.out.println("Пользователь с id = "+ id +" не найден");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void change_task_data(int id, String question, String answer) {
+        String query = "UPDATE tasks SET question = ?, answer = ? WHERE id = ?";
+    
+        try (Connection connection = DataBase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setString(1, question);
+            preparedStatement.setString(2, answer);
+            preparedStatement.setInt(3, id);
+    
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Данные задачи успешно обновлены");
+            } else {
+                System.out.println("Задача с id="+ id +" не найдена");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void change_test_data(int id, int topic_id, ArrayList<Integer> tasks_id, int teacher_id) {
+        String query = "UPDATE tests SET topic_id = ?, teacher_id = ? WHERE id = ?";
+    
+        try (Connection connection = DataBase.getConnection(); // Получаем соединение из класса DataBase
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, topic_id); // Устанавливаем новое значение topic_id
+            preparedStatement.setInt(2, teacher_id); // Устанавливаем новое значение teacher_id
+            preparedStatement.setInt(3, id); // Устанавливаем id теста, который нужно изменить
+    
+            int rowsAffected = preparedStatement.executeUpdate(); // Выполняем обновление
+    
+            if (rowsAffected > 0) {
+                // Если обновление прошло успешно, обновляем задачи, связанные с тестом
+                update_test_tasks(id, tasks_id);
+            } else {
+                System.out.println("Тест с id " + id + " не найден.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private static void update_test_tasks(int test_id, ArrayList<Integer> tasks_id) {
+        String deleteQuery = "DELETE FROM test_tasks WHERE test_id = ?";
+        try (Connection connection = DataBase.getConnection();
+             PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)) {
+            
+            deleteStatement.setInt(1, test_id);
+            deleteStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        String insertQuery = "INSERT INTO test_tasks (test_id, task_id) VALUES (?, ?)";
+        try (Connection connection = DataBase.getConnection();
+             PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
+            
+            for (Integer task_id : tasks_id) {
+                insertStatement.setInt(1, test_id);
+                insertStatement.setInt(2, task_id);
+                insertStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void change_student_profile_data(int id, int user_id, ArrayList<Integer> test_results_id) {
+        String query = "UPDATE student_profiles SET user_id = ? WHERE id = ?";
+    
+        try (Connection connection = DataBase.getConnection(); // Получаем соединение из класса DataBase
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, user_id); // Устанавливаем новое значение user_id
+            preparedStatement.setInt(2, id); // Устанавливаем id профиля студента, который нужно изменить
+    
+            int rowsAffected = preparedStatement.executeUpdate(); // Выполняем обновление
+    
+            if (rowsAffected > 0) {
+                // Если обновление прошло успешно, обновляем результаты тестов, связанные с профилем студента
+                update_student_test_results(id, test_results_id);
+            } else {
+                System.out.println("Профиль студента с id " + id + " не найден.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private static void update_student_test_results(int student_profile_id, ArrayList<Integer> test_results_id) {
+        // Удаляем старые результаты тестов, если необходимо
+        String deleteQuery = "DELETE FROM student_test_results WHERE student_profile_id = ?";
+        try (Connection connection = DataBase.getConnection();
+             PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)) {
+            
+            deleteStatement.setInt(1, student_profile_id);
+            deleteStatement.executeUpdate(); // Удаляем старые результаты тестов
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        // Добавляем новые результаты тестов
+        String insertQuery = "INSERT INTO student_test_results (student_profile_id, test_result_id) VALUES (?, ?)";
+        try (Connection connection = DataBase.getConnection();
+             PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
+            
+            for (Integer test_result_id : test_results_id) {
+                insertStatement.setInt(1, student_profile_id);
+                insertStatement.setInt(2, test_result_id);
+                insertStatement.executeUpdate(); // Добавляем новый результат теста
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void change_teacher_profile_data(int id, int user_id, ArrayList<Integer> topics_id) {
+        String query = "UPDATE teacher_profiles SET user_id = ? WHERE id = ?";
+    
+        try (Connection connection = DataBase.getConnection(); // Получаем соединение из класса DataBase
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, user_id); // Устанавливаем новое значение user_id
+            preparedStatement.setInt(2, id); // Устанавливаем id профиля преподавателя, который нужно изменить
+    
+            int rowsAffected = preparedStatement.executeUpdate(); // Выполняем обновление
+    
+            if (rowsAffected > 0) {
+                // Если обновление прошло успешно, обновляем темы, связанные с профилем преподавателя
+                update_teacher_topics(id, topics_id);
+            } else {
+                System.out.println("Профиль преподавателя с id " + id + " не найден.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private static void update_teacher_topics(int teacher_profile_id, ArrayList<Integer> topics_id) {
+        // Удаляем старые темы, если необходимо
+        String deleteQuery = "DELETE FROM teacher_topics WHERE teacher_profile_id = ?";
+        try (Connection connection = DataBase.getConnection();
+             PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)) {
+            
+            deleteStatement.setInt(1, teacher_profile_id);
+            deleteStatement.executeUpdate(); // Удаляем старые темы
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        // Добавляем новые темы
+        String insertQuery = "INSERT INTO teacher_topics (teacher_profile_id, topic_id) VALUES (?, ?)";
+        try (Connection connection = DataBase.getConnection();
+             PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
+            
+            for (Integer topic_id : topics_id) {
+                insertStatement.setInt(1, teacher_profile_id);
+                insertStatement.setInt(2, topic_id);
+                insertStatement.executeUpdate(); // Добавляем новую тему
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void change_class_data(int id, String name, ArrayList<Integer> students_id, int teacher_id) {
+        String query = "UPDATE classes SET name = ?, teacher_id = ? WHERE id = ?";
+    
+        try (Connection connection = DataBase.getConnection(); // Получаем соединение из класса DataBase
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setString(1, name); // Устанавливаем новое значение имени класса
+            preparedStatement.setInt(2, teacher_id); // Устанавливаем новое значение teacher_id
+            preparedStatement.setInt(3, id); // Устанавливаем id класса, который нужно изменить
+    
+            int rowsAffected = preparedStatement.executeUpdate(); // Выполняем обновление
+    
+            if (rowsAffected > 0) {
+                // Если обновление прошло успешно, обновляем студентов, связанные с классом
+                update_class_students(id, students_id);
+            } else {
+                System.out.println("Класс с id " + id + " не найден.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private static void update_class_students(int class_id, ArrayList<Integer> students_id) {
+        // Удаляем старых студентов, если необходимо
+        String deleteQuery = "DELETE FROM class_students WHERE class_id = ?";
+        try (Connection connection = DataBase.getConnection();
+             PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)) {
+            
+            deleteStatement.setInt(1, class_id);
+            deleteStatement.executeUpdate(); // Удаляем старых студентов
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        // Добавляем новых студентов
+        String insertQuery = "INSERT INTO class_students (class_id, student_id) VALUES (?, ?)";
+        try (Connection connection = DataBase.getConnection();
+             PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
+            
+            for (Integer student_id : students_id) {
+                insertStatement.setInt(1, class_id);
+                insertStatement.setInt(2, student_id);
+                insertStatement.executeUpdate(); // Добавляем нового студента
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 } 

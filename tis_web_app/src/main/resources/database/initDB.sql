@@ -51,7 +51,8 @@ CREATE TABLE IF NOT EXISTS admin_profile (
 -- Создание таблицы teacher_profile
 CREATE TABLE IF NOT EXISTS teacher_profile (
     id SERIAL PRIMARY KEY,  -- Автоинкрементный идентификатор
-    user_id INT REFERENCES users(id)  -- Внешний ключ на таблицу users
+    user_id INT REFERENCES users(id),  -- Внешний ключ на таблицу users
+    topics_id INT[]
 );
 
 -- Создание таблицы student_profile
