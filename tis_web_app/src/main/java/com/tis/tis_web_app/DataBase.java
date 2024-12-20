@@ -115,6 +115,34 @@ public class DataBase {
         return user;
     }
 
+    public static User get_user(String first_name, String patronymic, String last_name) {
+        User user = null;
+        String query = "SELECT id, first_name, patronymic, last_name, password, role_id FROM users WHERE first_name = ? AND patronymic = ? AND last_name = ?";
+    
+        try (Connection connection = DataBase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
+            preparedStatement.setString(1, first_name);
+            preparedStatement.setString(2, patronymic);
+            preparedStatement.setString(3, last_name);
+            
+            ResultSet resultSet = preparedStatement.executeQuery();
+    
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String password = resultSet.getString("password");
+                int role_id = resultSet.getInt("role_id");
+    
+                Role role = new Role(role_id);
+                user = new User(id, first_name, patronymic, last_name, password, role);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return user;
+    }
+
     public static List<Role> get_roles() {
         List<Role> roles = new ArrayList<>();
         String query = "SELECT id, name FROM roles"; // SQL-запрос для получения id и name ролей
@@ -312,6 +340,53 @@ public class DataBase {
         }
         
         return test;
+    }
+
+    public static ArrayList<TestResult> get_test_results() {
+        ArrayList<TestResult> testResults = new ArrayList<>();
+        String query = "SELECT id, test_id, points FROM test_results"; // SQL query to get test results
+    
+        try (Connection connection = DataBase.getConnection(); // Get connection from the DataBase class
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+    
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int test_id = resultSet.getInt("test_id");
+                int points = resultSet.getInt("points");
+    
+                TestResult testResult = new TestResult(id, test_id, points);
+                testResults.add(testResult);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return testResults;
+    }
+
+    public static TestResult get_test_result(int test_result_id) {
+        TestResult test_result = null;
+        String query = "SELECT id, test_id, points FROM test_results WHERE id = ?";
+    
+        try (Connection connection = DataBase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+    
+            preparedStatement.setInt(1, test_result_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+    
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int test_id = resultSet.getInt("test_id");
+                int points = resultSet.getInt("points");
+    
+                test_result = new TestResult(id, test_id, points);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return test_result;
     }
 
     public static ArrayList<Topic> get_topics() {

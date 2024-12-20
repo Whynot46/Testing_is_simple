@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель администратора</title>
+    <!-- Подключение Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"> <!-- Иконки Font Awesome -->
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+        <a class="navbar-brand text-white" href="#">Панель администратора</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+
+    <main class="container mt-4">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="text-center">Добро пожаловать в панель администратора!</h2>
+                <p class="text-center">Выберите опцию из выпадающего списка, чтобы управлять пользователями, ролями, тестами и другими данными.</p>
+                
+                <div class="text-center mt-4">
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Управление данными
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" th:href="@{/admin_panel/users}">Пользователи</a>
+                            <a class="dropdown-item" th:href="@{/admin_panel/roles}">Роли</a>
+                            <a class="dropdown-item" th:href="@{/admin_panel/tests}">Тесты</a>
+                            <a class="dropdown-item" th:href="@{/admin_panel/test_results}">Результаты тестов</a>
+                            <a class="dropdown-item" th:href="@{/admin_panel/tasks}">Задачи</a>
+                            <a class="dropdown-item" th:href="@{/admin_panel/topics}">Темы</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h5>Информация о системе</h5>
+                    <p>Эта панель администратора позволяет вам управлять всеми аспектами приложения. Вы можете добавлять, редактировать и удалять пользователей, управлять ролями, создавать тесты и просматривать результаты тестов.</p>
+                    <p>Пожалуйста, выберите нужный раздел из выпадающего списка, чтобы начать работу.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center py-3 bg-light">
+        <p>&copy; 2023 TIS Web App</p>
+    </footer>
+
+    <!-- Подключение Bootstrap JS и jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
