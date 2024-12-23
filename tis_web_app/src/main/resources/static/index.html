@@ -5,36 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Главная страница</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
-
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand" href="#">Testing is Simple</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
-                    <!-- Проверка, авторизован ли пользователь -->
-                    <li class="nav-item" th:if="${#authentication.authenticated}">
-                        <span class="navbar-text" th:text="${#authentication.principal.fullName}"></span>
-                    </li>
-                    <li class="nav-item" th:if="${#authentication.authenticated}">
-                        <a class="nav-link" th:href="@{${#authentication.principal.role == 'STUDENT'} ? '/student/profile' : 
-                                                        ${#authentication.principal.role == 'TEACHER'} ? '/teacher/profile' : 
-                                                        ${#authentication.principal.role == 'ADMIN'} ? '/admin/profile' : 
-                                                        '/profile'}">Личный кабинет</a>
-                    </li>
-                    <li class="nav-item" th:if="${#authentication.authenticated}">
-                        <a class="nav-link" th:href="@{/logout}">Выход</a>
-                    </li>
-                    <li class="nav-item" th:unless="${#authentication.authenticated}">
-                        <a class="nav-link" th:href="@{/login}">Вход</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 </head>
 <body>
     <div class="container mt-5">

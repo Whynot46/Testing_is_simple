@@ -14,53 +14,54 @@ public class User implements UserDetails {
     private String password_hash;
     private int role_id;
 
-    User(int id, String first_name, String patronymic, String last_name, String password_hash, int role_id){
+    User(int id, String first_name, String patronymic, String last_name, String password_hash, int role_id) {
         this.id = id;
         this.first_name = first_name;
         this.patronymic = patronymic;
         this.last_name = last_name;
         this.password_hash = password_hash;
         this.role_id = role_id;
-        if (DataBase.is_old(id)){
+        if (DataBase.is_old(id)) {
             DataBase.add_user(first_name, patronymic, last_name, password_hash, role_id);
         }
-            
+
     }
 
-    public Integer get_id(){
+    public Integer get_id() {
         return id;
     }
 
-    public String get_first_name(){
+    public String get_first_name() {
         return first_name;
     }
 
-    public String get_patronymic(){
+    public String get_patronymic() {
         return patronymic;
     }
 
-    public String get_last_name(){
+    public String get_last_name() {
         return last_name;
     }
 
-    public String get_fullname(){
+    public String get_fullname() {
         return first_name + " " + patronymic + " " + last_name;
     }
 
-    public int get_role_id(){
+    public int get_role_id() {
         return role_id;
     }
 
-    public String get_role_name(){
+    public String get_role_name() {
         return DataBase.get_role_name(role_id);
     }
 
-    public String get_password_hash(){
+    public String get_password_hash() {
         return password_hash;
     }
 
-    public String toString(){
-        return "id: " + id + ", first_name: " + first_name + ", patronymic: " + patronymic + "birth_date: " + "password_hash: "+ password_hash + "role_id: " + role_id;
+    public String toString() {
+        return "id: " + id + ", first_name: " + first_name + ", patronymic: " + patronymic + "birth_date: "
+                + "password_hash: " + password_hash + "role_id: " + role_id;
     }
 
     // Реализация методов UserDetails

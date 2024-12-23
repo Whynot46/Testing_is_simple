@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS task (
 -- Создание таблицы test
 CREATE TABLE IF NOT EXISTS test (
     id SERIAL PRIMARY KEY,  -- Автоинкрементный идентификатор
+    name VARCHAR(255) NOT NULL,
     topic_id INT REFERENCES topic(id),  -- Внешний ключ на таблицу topic
     tasks_id INT[],  -- Массив идентификаторов задач
     teacher_id INT REFERENCES users(id)  -- Внешний ключ на таблицу users

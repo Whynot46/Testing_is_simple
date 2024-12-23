@@ -1,14 +1,19 @@
 package com.tis.tis_web_app;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class AuthController {
 
     @GetMapping("/login")
-    public String show_login_page() {
-        return "login"; // возвращает страницу входа
+    public String showLoginPage(@RequestParam(value = "error", required = false) String error, Model model) {
+        if (error != null) {
+            model.addAttribute("error", true); // Добавляем атрибут для отображения ошибки
+        }
+        return "login";
     }
 
     @GetMapping("/logout")

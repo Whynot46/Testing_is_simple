@@ -1,8 +1,8 @@
 -- Заполнение таблицы roles
 INSERT INTO roles (name) VALUES
-('admin'),
-('teacher'),
-('student');
+('ADMIN'),
+('TEACHER'),
+('STUDENT');
 
 -- Заполнение таблицы users
 INSERT INTO users (first_name, patronymic, last_name, password_hash, role_id) VALUES
@@ -25,10 +25,10 @@ INSERT INTO task (question, answer) VALUES
 ('Что такое сила?', 'Сила — это воздействие на тело, которое изменяет его движение.');
 
 -- Заполнение таблицы test
-INSERT INTO test (topic_id, tasks_id, teacher_id) VALUES
-(1, ARRAY[1], 2),
-(2, ARRAY[2], 5),
-(3, ARRAY[3], 5);
+INSERT INTO test (topic_id, name, tasks_id, teacher_id) VALUES
+(1, 'Самый лёгкий тест', ARRAY[1], 2),
+(2, 'Самый средний тест', ARRAY[2], 5),
+(3, 'Самый тяжёлый тест', ARRAY[3], 5);
 
 -- Заполнение таблицы test_result
 INSERT INTO test_result (test_id, points) VALUES

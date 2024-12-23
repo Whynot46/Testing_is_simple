@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Test {
     private int id;
+    private String name;
     private int topic_id;
     private ArrayList<Integer> tasks_id;
     private int teacher_id;
@@ -23,6 +24,10 @@ public class Test {
 
     public int get_id(){
         return id;
+    }
+
+    public String get_name(){
+        return name;
     }
 
     public int get_topic_id(){
