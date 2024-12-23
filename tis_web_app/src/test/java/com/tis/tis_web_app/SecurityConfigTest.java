@@ -14,7 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfigTest {
 
     @Bean
     public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
@@ -30,9 +30,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authorize -> authorize // Использование authorizeHttpRequests
-                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
-                .requestMatchers("/teacher/**").hasAuthority("ROLE_TEACHER")
-                .requestMatchers("/student/**").hasAuthority("ROLE_STUDENT")
+                .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                .requestMatchers("/teacher/**").hasAuthority("TEACHER")
+                .requestMatchers("/student/**").hasAuthority("STUDENT")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form // Использование лямбда-выражений для конфигурации

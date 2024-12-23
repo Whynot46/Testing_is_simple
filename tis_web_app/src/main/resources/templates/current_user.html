@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Текущий пользователь</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Информация о текущем пользователе</h2>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Профиль пользователя:</h5>
+                <p><strong>Имя пользователя:</strong> <span th:text="${username}">Имя пользователя</span></p> <!-- Выводим имя пользователя -->
+                <p><strong>Роль:</strong> <span th:text="${role}">Роль пользователя</span></p> <!-- Выводим роль пользователя -->
+                <p><strong>Данные пользователя:</strong></p>
+                <pre th:text="${principal}"></pre> <!-- Выводим информацию о principal -->
+                <div class="text-center mt-4">
+                    <a href="/logout" class="btn btn-danger">Выйти</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

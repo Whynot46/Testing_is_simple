@@ -1,16 +1,16 @@
 -- Заполнение таблицы roles
 INSERT INTO roles (name) VALUES
-('Администратор'),
-('Учитель'),
-('Студент');
+('admin'),
+('teacher'),
+('student');
 
 -- Заполнение таблицы users
-INSERT INTO users (first_name, patronymic, last_name, password, role_id) VALUES
-('Админ', 'Админович', 'Админов', '1111', 1),  -- Администратор
-('Препод', 'Иван', 'Николаевич', '1111', 2),  -- Учитель
-('Пахалева', 'Дарья', 'Борисовна', '1111', 3),  -- Студент
-('Нурмухамедов', 'Наиль', 'Радикович', '1111', 3),  -- Студент
-('Препод', 'Иван', 'Иванович', '1111', 2);  -- Учитель
+INSERT INTO users (first_name, patronymic, last_name, password_hash, role_id) VALUES
+('Админ', 'Админович', 'Админов', '$2a$10$zkiBQmq5Ih3bZ4Y5UYWq8eiCsWoF.f29Tf0r3ymX9ZNl3UvTvWL.m', 1),  -- Администратор
+('Иван', 'Николаевич', 'Препод', '$2a$10$zkiBQmq5Ih3bZ4Y5UYWq8eiCsWoF.f29Tf0r3ymX9ZNl3UvTvWL.m', 2),  -- Учитель
+('Дарья', 'Борисовна', 'Пахалева', '$2a$10$zkiBQmq5Ih3bZ4Y5UYWq8eiCsWoF.f29Tf0r3ymX9ZNl3UvTvWL.m', 3),  -- Студент
+('Наиль', 'Радикович', 'Нурмухамедов', '$2a$10$zkiBQmq5Ih3bZ4Y5UYWq8eiCsWoF.f29Tf0r3ymX9ZNl3UvTvWL.m', 3),  -- Студент
+('Иван', 'Иванович', 'Препод', '$2a$10$zkiBQmq5Ih3bZ4Y5UYWq8eiCsWoF.f29Tf0r3ymX9ZNl3UvTvWL.m', 2);  -- Учитель
 
 -- Заполнение таблицы topic
 INSERT INTO topic (name) VALUES

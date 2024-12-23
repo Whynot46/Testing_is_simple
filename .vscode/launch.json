@@ -2,13 +2,28 @@
     "configurations": [
         {
             "type": "java",
+            "name": "PasswordCheckExample",
+            "request": "launch",
+            "mainClass": "com.tis.tis_web_app.PasswordCheckExample",
+            "projectName": "tis_web_app"
+        },
+        {
+            "type": "java",
+            "name": "PasswordHashingExample",
+            "request": "launch",
+            "mainClass": "com.tis.tis_web_app.PasswordHashingExample",
+            "projectName": "tis_web_app"
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-TisWebAppApplication<tis_web_app>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "mainClass": "com.tis.tis_web_app.TisWebAppApplication",
             "projectName": "tis_web_app",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=50237 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=tis_web_app"
         }
     ]
 }

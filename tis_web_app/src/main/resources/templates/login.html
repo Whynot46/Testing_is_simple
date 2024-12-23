@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +11,13 @@
         <h2 class="text-center">Вход в систему</h2>
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <form action="/login" method="post">
+                <div th:if="${param.logout}" class="alert alert-success">
+                    Вы вышли из системы.
+                </div>
+                <div th:if="${error}" class="alert alert-danger">
+                    Неверное имя пользователя или пароль.
+                </div>
+                <form th:action="@{/login}" method="post" id="loginForm">
                     <div class="form-group">
                         <label for="username">Имя пользователя</label>
                         <input type="text" class="form-control" id="username" name="username" required>

@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
     first_name VARCHAR(255) NOT NULL,  -- Имя пользователя
     patronymic VARCHAR(255),  -- Отчество пользователя
     last_name VARCHAR(255) NOT NULL,  -- Фамилия пользователя
-    password VARCHAR(255) NOT NULL,  -- пароль пользователя
+    password_hash VARCHAR(255) NOT NULL,  -- пароль пользователя
     role_id INT REFERENCES roles(id)  -- Внешний ключ на таблицу roles
 );
 

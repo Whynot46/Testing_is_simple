@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль студента</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div th:replace="~{header :: header}"></div>
+
+    <div class="container mt-5">
+        <h2 class="text-center">Профиль студента</h2>
+        
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Персональная информация:</h5>
+                <div th:if="${user != null}">
+                    <p><strong>Имя:</strong> <span th:text="${user.get_first_name()}"></span></p>
+                    <p><strong>Отчество:</strong> <span th:text="${user.get_patronymic()}"></span></p>
+                    <p><strong>Фамилия:</strong> <span th:text="${user.get_last_name()}"></span></p>
+                    <p><strong>Роль:</strong> <span th:text="${user.get_role_name()}"></span></p>
+                </div>
+                <div th:if="${user == null}">
+                    <p>Пользователь не найден.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/logout" class="btn btn-danger">Выйти</a>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

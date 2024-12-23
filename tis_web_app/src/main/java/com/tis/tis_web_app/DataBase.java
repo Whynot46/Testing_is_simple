@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 public class DataBase {
     private static HikariDataSource dataSource;
 
@@ -42,22 +45,35 @@ public class DataBase {
         }
         return false;
     }
-    
+
     public static void add_user(String firstName, String patronymic, String lastName, String password, int role_id) {
-        String query = "INSERT INTO users (first_name, patronymic, last_name, password, role_id) VALUES (?, ?, ?, ?, ?)";
+        // Проверяем, существует ли пользователь
+        if (get_user(firstName, patronymic, lastName) != null) {
+            System.out.println("Пользователь уже существует");
+            return; // Если пользователь существует, выходим из метода
+        }
+    
+        String query = "INSERT INTO users (first_name, patronymic, last_name, password_hash, role_id) VALUES (?, ?, ?, ?, ?)";
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String password_hash = passwordEncoder.encode(password);
         try (Connection connection = getConnection(); // Получаем соединение из пула
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            
             preparedStatement.setString(1, firstName);
             preparedStatement.setString(2, patronymic);
             preparedStatement.setString(3, lastName);
-            preparedStatement.setString(4, password);
+            preparedStatement.setString(4, password_hash);
             preparedStatement.setInt(5, role_id);
             
             int rowsAffected = preparedStatement.executeUpdate();
-            return rowsAffected > 0;
+            
+            if (rowsAffected > 0) {
+                System.out.println("Пользователь успешно добавлен");
+            } else {
+                System.out.println("Не удалось добавить пользователя");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
     }
 
@@ -93,7 +109,7 @@ public class DataBase {
             e.printStackTrace();
         }
     }
-    
+
     public static void add_task(int task_id, String question, String answer) {
         String query = "INSERT INTO tasks (id, question, answer) VALUES (?, ?, ?)";
         try (Connection connection = DataBase.getConnection(); // Получаем соединение из класса DataBase
@@ -117,7 +133,7 @@ public class DataBase {
 
     public static List<User> get_users(){
         List<User> users = new ArrayList<>();
-        String query = "SELECT id, first_name, patronymic, last_name, password, role_id FROM users"; // Предполагается, что role_id хранится в базе данных
+        String query = "SELECT id, first_name, patronymic, last_name, password_hash, role_id FROM users"; // Предполагается, что role_id хранится в базе данных
 
         try (Connection connection = DataBase.getConnection(); // Получаем соединение из класса DataBase
              PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -128,11 +144,10 @@ public class DataBase {
                 String first_name = resultSet.getString("first_name");
                 String patronymic = resultSet.getString("patronymic");
                 String last_name = resultSet.getString("last_name");
-                String password = resultSet.getString("password");
+                String password_hash = resultSet.getString("password_hash");
                 int role_id = resultSet.getInt("role_id");
 
-                Role role = new Role(role_id);
-                User user = new User(id, first_name, patronymic, last_name, password, role);
+                User user = new User(id, first_name, patronymic, last_name, password_hash, role_id);
                 users.add(user);
             }
         } catch (Exception e) {
@@ -143,7 +158,7 @@ public class DataBase {
 
     public static User get_user(int user_id) {
         User user = null;
-        String query = "SELECT id, first_name, patronymic, last_name, password, role_id FROM users WHERE id = ?"; // SQL-запрос для получения пользователя по id
+        String query = "SELECT id, first_name, patronymic, last_name, password_hash, role_id FROM users WHERE id = ?"; // SQL-запрос для получения пользователя по id
     
         try (Connection connection = DataBase.getConnection(); // Получаем соединение из класса DataBase
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -156,11 +171,10 @@ public class DataBase {
                 String first_name = resultSet.getString("first_name");
                 String patronymic = resultSet.getString("patronymic");
                 String last_name = resultSet.getString("last_name");
-                String password = resultSet.getString("password");
+                String password_hash = resultSet.getString("password_hash");
                 int role_id = resultSet.getInt("role_id"); // Получаем role_id из результата
     
-                Role role = DataBase.get_role(role_id);
-                user = new User(id, first_name, patronymic, last_name, password, role);
+                user = new User(id, first_name, patronymic, last_name, password_hash, role_id);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -169,9 +183,9 @@ public class DataBase {
         return user;
     }
 
-    public static User get_user(String first_name, String patronymic, String last_name) {
+    public static User get_user(String last_name, String first_name, String patronymic) {
         User user = null;
-        String query = "SELECT id, first_name, patronymic, last_name, password, role_id FROM users WHERE first_name = ? AND patronymic = ? AND last_name = ?";
+        String query = "SELECT id, first_name, patronymic, last_name, password_hash, role_id FROM users WHERE first_name = ? AND patronymic = ? AND last_name = ?";
     
         try (Connection connection = DataBase.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -184,11 +198,10 @@ public class DataBase {
     
             if (resultSet.next()) {
                 int id = resultSet.getInt("id");
-                String password = resultSet.getString("password");
+                String password_hash = resultSet.getString("password_hash");
                 int role_id = resultSet.getInt("role_id");
     
-                Role role = new Role(role_id);
-                user = new User(id, first_name, patronymic, last_name, password, role);
+                user = new User(id, first_name, patronymic, last_name, password_hash, role_id);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -596,8 +609,8 @@ public class DataBase {
         return admin_profile;
     }
 
-    public static void change_user_data(int id, String first_name, String patronymic, String last_name, String password, int role_id) {
-        String query = "UPDATE users SET first_name = ?, patronymic = ?, last_name = ?, password = ?, role_id = ? WHERE id = ?";
+    public static void change_user_data(int id, String first_name, String patronymic, String last_name, String password_hash, int role_id) {
+        String query = "UPDATE users SET first_name = ?, patronymic = ?, last_name = ?, password_hash = ?, role_id = ? WHERE id = ?";
     
         try (Connection connection = DataBase.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -605,7 +618,7 @@ public class DataBase {
             preparedStatement.setString(1, first_name);
             preparedStatement.setString(2, patronymic);
             preparedStatement.setString(3, last_name);
-            preparedStatement.setString(4, password);
+            preparedStatement.setString(4, password_hash);
             preparedStatement.setInt(5, role_id);
             preparedStatement.setInt(6, id);
     
