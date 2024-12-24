@@ -9,13 +9,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-
-    private static final Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 
     @Override
     public UserDetails loadUserByUsername(String fullname) throws UsernameNotFoundException {
@@ -31,9 +27,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("User  not found with username: " + fullname);
         }
 
-        logger.info("Loaded user: {} with role_: {}", user.get_fullname(), user.get_role_id());
-
-        // Получаем роли пользователя
         Collection<GrantedAuthority> authorities = getAuthorities(user.get_role_id());
 
         return new org.springframework.security.core.userdetails.User(

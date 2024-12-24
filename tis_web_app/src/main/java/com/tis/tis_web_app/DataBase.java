@@ -23,7 +23,6 @@ public class DataBase {
         config.setPassword("100415");
         config.setMaximumPoolSize(10); // Максимальное количество соединений в пуле
         dataSource = new HikariDataSource(config);
-        System.out.println("Пул соединений с базой данных инициализирован.");
     }
 
     public static Connection getConnection() throws SQLException {
@@ -47,10 +46,8 @@ public class DataBase {
     }
 
     public static void add_user(String firstName, String patronymic, String lastName, String password, int role_id) {
-        // Проверяем, существует ли пользователь
         if (get_user(firstName, patronymic, lastName) != null) {
-            System.out.println("Пользователь уже существует");
-            return; // Если пользователь существует, выходим из метода
+            return; 
         }
     
         String query = "INSERT INTO users (first_name, patronymic, last_name, password_hash, role_id) VALUES (?, ?, ?, ?, ?)";
@@ -65,13 +62,6 @@ public class DataBase {
             preparedStatement.setString(4, password_hash);
             preparedStatement.setInt(5, role_id);
             
-            int rowsAffected = preparedStatement.executeUpdate();
-            
-            if (rowsAffected > 0) {
-                System.out.println("Пользователь успешно добавлен");
-            } else {
-                System.out.println("Не удалось добавить пользователя");
-            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -90,8 +80,6 @@ public class DataBase {
             int rowsAffected = preparedStatement.executeUpdate(); // Выполняем вставку
             
             if (rowsAffected > 0) {
-                System.out.println("Тест успешно добавлен");
-                // Если есть задачи, добавляем их в таблицу test_tasks
                 if (!tasks_id.isEmpty()) {
                     for (Integer task_id : tasks_id) {
                         String task_query = "INSERT INTO test_tasks (test_id, task_id) VALUES (?, ?)";
@@ -102,8 +90,6 @@ public class DataBase {
                         }
                     }
                 }
-            } else {
-                System.out.println("Не удалось добавить тест");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -119,13 +105,6 @@ public class DataBase {
             preparedStatement.setString(2, question); // Устанавливаем вопрос
             preparedStatement.setString(3, answer); // Устанавливаем ответ
             
-            int rowsAffected = preparedStatement.executeUpdate(); // Выполняем вставку
-            
-            if (rowsAffected > 0) {
-                System.out.println("Задача успешно добавлена");
-            } else {
-                System.out.println("Не удалось добавить задачу");
-            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -622,12 +601,6 @@ public class DataBase {
             preparedStatement.setInt(5, role_id);
             preparedStatement.setInt(6, id);
     
-            int rowsAffected = preparedStatement.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Данные пользователя успешно обновлены");
-            } else {
-                System.out.println("Пользователь с id = "+ id +" не найден");
-            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -643,12 +616,6 @@ public class DataBase {
             preparedStatement.setString(2, answer);
             preparedStatement.setInt(3, id);
     
-            int rowsAffected = preparedStatement.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Данные задачи успешно обновлены");
-            } else {
-                System.out.println("Задача с id="+ id +" не найдена");
-            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -664,14 +631,6 @@ public class DataBase {
             preparedStatement.setInt(2, teacher_id); // Устанавливаем новое значение teacher_id
             preparedStatement.setInt(3, id); // Устанавливаем id теста, который нужно изменить
     
-            int rowsAffected = preparedStatement.executeUpdate(); // Выполняем обновление
-    
-            if (rowsAffected > 0) {
-                // Если обновление прошло успешно, обновляем задачи, связанные с тестом
-                update_test_tasks(id, tasks_id);
-            } else {
-                System.out.println("Тест с id " + id + " не найден.");
-            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -714,10 +673,7 @@ public class DataBase {
             int rowsAffected = preparedStatement.executeUpdate(); // Выполняем обновление
     
             if (rowsAffected > 0) {
-                // Если обновление прошло успешно, обновляем результаты тестов, связанные с профилем студента
                 update_student_test_results(id, test_results_id);
-            } else {
-                System.out.println("Профиль студента с id " + id + " не найден.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -763,11 +719,9 @@ public class DataBase {
             int rowsAffected = preparedStatement.executeUpdate(); // Выполняем обновление
     
             if (rowsAffected > 0) {
-                // Если обновление прошло успешно, обновляем темы, связанные с профилем преподавателя
                 update_teacher_topics(id, topics_id);
-            } else {
-                System.out.println("Профиль преподавателя с id " + id + " не найден.");
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -813,11 +767,9 @@ public class DataBase {
             int rowsAffected = preparedStatement.executeUpdate(); // Выполняем обновление
     
             if (rowsAffected > 0) {
-                // Если обновление прошло успешно, обновляем студентов, связанные с классом
                 update_class_students(id, students_id);
-            } else {
-                System.out.println("Класс с id " + id + " не найден.");
             }
+            
         } catch (SQLException e) {
             e.printStackTrace();
         }
