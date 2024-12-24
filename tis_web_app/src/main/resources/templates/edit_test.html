@@ -4,21 +4,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Редактировать тест</title>
+    <title>Редактор теста</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .selected {
+            border: 2px solid #007bff;
+            /* Цвет рамки при выделении */
+            background-color: #e7f1ff;
+            /* Цвет фона при выделении */
+        }
+    </style>
 </head>
 
 <body>
     <div th:replace="~{header :: header}"></div>
 
     <div class="container mt-5">
-        <h2 class="text-center">Редактировать тест</h2>
+        <h2 class="text-center">Редактор теста</h2>
 
         <form>
             <div class="form-group">
                 <label for="testName">Название теста</label>
                 <input type="text" class="form-control" id="testName" placeholder="Введите название теста"
-                    value="value">
+                    value="">
             </div>
 
             <div class="form-group">
@@ -32,37 +40,47 @@
             </div>
 
             <div class="form-group">
-                <div class="form-group">
-                    <label>Выберите вопросы:</label>
-                    <div id="availableQuestions" style="display: flex; flex-direction: column; gap: 15px;">
-                        <div class="form-check" style="display: flex; align-items: center;">
-                            <input class="form-check-input" type="checkbox" value="Сколько будет 2 + 2?" id="question1">
-                            <label class="form-check-label" for="question1">Сколько будет 2 + 2?</label>
-                            <label class="form-check-label" for="question1">Правильный ответ: </label>
-                            <input class="form-check-input" value="4"
-                                style="margin: 0px; margin-left: 5px; width: 80px; position: static;">
+                <label>Выберите вопросы:</label>
+                <div id="availableQuestions" style="display: flex; flex-direction: column; gap: 15px;">
+                    <!-- Пример карточки вопроса -->
+                    <div class="card question-card" style="cursor: pointer;">
+                        <div class="card-body">
+                            <h5 class="card-title">Сколько будет 2 + 2?</h5>
+                            <p class="card-text"><strong>Правильный ответ:</strong> <span>4</span></p>
                         </div>
-                        <div class="form-check" style="display: flex; align-items: center;">
-                            <input class="form-check-input" type="checkbox" value="Сколько будет 4 + 2?" id="question1">
-                            <label class="form-check-label" for="question1">Сколько будет 4 + 2?</label>
-                            <label class="form-check-label" for="question1">Правильный ответ: </label>
-                            <input class="form-check-input" value="6"
-                                style="margin: 0px; margin-left: 5px; width: 80px; position: static;">
+                    </div>
+                    <div class="card question-card" style="cursor: pointer;">
+                        <div class="card-body">
+                            <h5 class="card-title">Сколько будет 4 + 2?</h5>
+                            <p class="card-text"><strong>Правильный ответ:</strong> <span>6</span></p>
                         </div>
-                        <div class="form-check" style="display: flex; align-items: center;">
-                            <input class="form-check-input" type="checkbox" value="Сколько будет 1000 - 7?" id="question1">
-                            <label class="form-check-label" for="question1">Сколько будет 1000 - 7?</label>
-                            <label class="form-check-label" for="question1">Правильный ответ: </label>
-                            <input class="form-check-input" value="993"
-                                style="margin: 0px; margin-left: 5px; width: 80px; position: static;">
+                    </div>
+                    <div class="card question-card" style="cursor: pointer;">
+                        <div class="card-body">
+                            <h5 class="card-title">Сколько будет 1000 - 7?</h5>
+                            <p class="card-text"><strong>Правильный ответ:</strong> <span>993</span></p>
                         </div>
                     </div>
                 </div>
-                <button id="new_question" type="button" class="btn btn-primary">Добавить вопрос</button>
+            </div>
+
+            <button id="create_question" type="button" class="btn btn-secondary" data-toggle="collapse"
+                data-target="#createQuestionForm">Добавить вопрос</button>
+
+            <div id="createQuestionForm" class="collapse">
+                <div class="form-group">
+                    <label for="newQuestion">Вопрос</label>
+                    <input type="text" class="form-control" id="newQuestion" placeholder="Введите вопрос">
+                </div>
+                <div class="form-group">
+                    <label for="newAnswer">Ответ</label>
+                    <input type="text" class="form-control" id="newAnswer" placeholder="Введите ответ">
+                </div>
+                <button id="submitNewQuestion" type="button" class="btn btn-success">Создать вопрос</button>
             </div>
 
             <div class="text-center mt-4">
-                <button type="submit" class="btn btn-success">Сохранить изменения</button>
+                <button type="button" id="saveChanges" class="btn btn-success">Сохранить изменения</button>
                 <a href="/teacher/tests_list" class="btn btn-secondary">Назад к списку тестов</a>
             </div>
         </form>
@@ -72,24 +90,41 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        document.querySelector('#new_question').addEventListener("click", e => {
-            const selectedQuestions = [];
+        // Обработчик для выделения карточки вопроса
+        $(document).on('click', '.question-card', function () {
+            // Переключаем класс выделения для текущей карточки
+            $(this).toggleClass('selected');
+        });
 
-            $('#availableQuestions input:checked').each(function () {
-                selectedQuestions.push($(this).val());
-            });
+        document.querySelector('#submitNewQuestion').addEventListener("click", () => {
+            const newQuestion = document.getElementById("newQuestion").value;
+            const newAnswer = document.getElementById("newAnswer").value;
 
-            selectedQuestions.forEach(question => {
-                const questionHtml = `
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" value="${question}" readonly>
-                        <div class="input-group-append">
-                            <button class="btn btn-danger" type="button" onclick="this.parentElement.parentElement.remove()">Удалить</button>
+            if (newQuestion && newAnswer) {
+                // Создаем HTML для нового вопроса
+                const newQuestionHtml = `
+                    <div class="card question-card mb-3" style="cursor: pointer;">
+                        <div class="card-body">
+                            <h5 class="card-title">${newQuestion}</h5>
+                            <p class="card-text"><strong>Правильный ответ:</strong> <span>${newAnswer}</span></p>
                         </div>
                     </div>`;
-                $('#availableQuestions').append(questionHtml);
-            });
-        })
+
+                // Добавляем новый вопрос в список
+                $('#availableQuestions').append(newQuestionHtml);
+                document.getElementById("newQuestion").value = ""; // Очистить поле вопроса
+                document.getElementById("newAnswer").value = ""; // Очистить поле ответа
+                $('#createQuestionForm').collapse('hide'); // Скрыть форму создания вопроса
+            } else {
+                alert("Пожалуйста, заполните оба поля: вопрос и ответ.");
+            }
+        });
+
+        document.querySelector('#saveChanges').addEventListener("click", () => {
+            // Здесь можно добавить логику для сохранения изменений, если необходимо
+            // Например, отправка данных на сервер через AJAX или просто переадресация
+            window.location.href = "/teacher/tests_list"; // Переадресация на страницу "Все тесты"
+        });
     </script>
 </body>
 
