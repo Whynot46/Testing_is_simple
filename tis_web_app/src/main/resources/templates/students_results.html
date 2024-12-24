@@ -3,38 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мои результаты</title>
+    <title>Результаты тестов студента</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
     <div th:replace="~{header :: header}"></div>
-
+    
     <div class="container mt-5">
-        <h2 class="text-center">Результаты тестов студента</h2>
-        <h5>Студент: <span th:text="${user.get_last_name()}"> </span> <span th:text="${user.get_first_name()}"></span> <span th:text="${user.get_patronymic()}"></span></h5>
+        <h2 class="text-center">Результаты тестов</h2>
 
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Тесты:</h5>
-                <ul class="list-group" style="display: flex; flex-direction: column; gap: 20px;">
-                    <li class="list-group-item" style="border: 1px solid rgba(0, 0, 0, .125);">
-                        <h6>Название теста: <span>Самый лёгкий тест</span></h6>
-                        <p>Тема: <span>Алгебра</span></p>
-                        <p>Результат: <span>85/100</span></p>
-                    </li>
-                    <li class="list-group-item" style="border: 1px solid rgba(0, 0, 0, .125);">
-                        <h6>Название теста: <span>Самый средний тест</span></h6>
-                        <p>Тема: <span>Физика</span></p>
-                        <p>Результат: <span>75/100</span></p>
-                    </li>
-                    <li class="list-group-item" style="border: 1px solid rgba(0, 0, 0, .125);">
-                        <h6>Название теста: <span>Самый тяжёлый тест</span></h6>
-                        <p>Тема: <span>Химия</span></p>
-                        <p>Результат: <span>60/100</span></p>
-                    </li>
-                </ul>
+        <div class="row mt-4">
+            <!-- Пример карточки результата теста -->
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Название теста: Самый лёгкий тест</h5>
+                        <p class="card-text"><strong>Тема:</strong> Алгебра</p>
+                        <p class="card-text"><strong>Количество заданий:</strong> 3</p>
+                        <p class="card-text"><strong>Автор:</strong> Иван Николаевич</p>
+                        <p class="card-text"><strong>Минимальный балл:</strong> 50</p>
+                        <p class="card-text"><strong>Средний балл:</strong> 75</p>
+                        <p class="card-text"><strong>Максимальный балл:</strong> 100</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Название теста: Самый средний тест</h5>
+                        <p class="card-text"><strong>Тема:</strong> Физика</p>
+                        <p class="card-text"><strong>Количество заданий:</strong> 1</p>
+                        <p class="card-text"><strong>Автор:</strong> Иван Иванович</p>
+                        <p class="card-text"><strong>Минимальный балл:</strong> 0</p>
+                        <p class="card-text"><strong>Средний балл:</strong> 50</p>
+                        <p class="card-text"><strong>Максимальный балл:</strong> 100</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Название теста: Самый лёгкий тест</h5>
+                        <p class="card-text"><strong>Тема:</strong> Химия</p>
+                        <p class="card-text"><strong>Количество заданий:</strong> 1</p>
+                        <p class="card-text"><strong>Автор:</strong> Иван Иванович</p>
+                        <p class="card-text"><strong>Минимальный балл:</strong> 0</p>
+                        <p class="card-text"><strong>Средний балл:</strong> 50</p>
+                        <p class="card-text"><strong>Максимальный балл:</strong> 100</p>
+                    </div>
+                </div>
             </div>
         </div>
+        <footer class="text-center mt-5">
+            <p>&copy; 2024 TIS Web App. Все права защищены.</p>
+        </footer>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

@@ -21,10 +21,6 @@ public class User implements UserDetails {
         this.last_name = last_name;
         this.password_hash = password_hash;
         this.role_id = role_id;
-        if (DataBase.is_old(id)) {
-            DataBase.add_user(first_name, patronymic, last_name, password_hash, role_id);
-        }
-
     }
 
     public Integer get_id() {

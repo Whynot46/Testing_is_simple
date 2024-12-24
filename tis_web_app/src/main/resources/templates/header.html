@@ -16,8 +16,8 @@
                 '/profile'}" style="border: 1px solid grey; border-radius: 15px; padding: 10px 20px; color: #000;">Все
                     тесты</a>
                 <a class="nav-link" th:href="${user.get_role_name() == 'STUDENT' ? '/student/student_results' : 
-                user.get_role_name() == 'TEACHER' ? '/teacher/student_results' : 
-                user.get_role_name() == 'ADMIN' ? '/admin/student_results' : 
+                user.get_role_name() == 'TEACHER' ? '/teacher/students_results' : 
+                user.get_role_name() == 'ADMIN' ? '/admin/students_results' : 
                 '/profile'}"
                     style="border: 1px solid grey; border-radius: 15px; padding: 10px 20px; color: #000;">Результаты</a>
             </div>

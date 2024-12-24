@@ -31,8 +31,6 @@ public class AdminController {
         
         return "admin_profile"; // Return the view name
     }
-
-
     
     @GetMapping("/current-user")
     public String getCurrentUser (Model model) {
